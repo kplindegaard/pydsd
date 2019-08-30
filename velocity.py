@@ -1,4 +1,4 @@
-from config import h, m, k, d
+from config import h, m, k, d, MAX_CYCLES
 from utils import get_client, group_exists, push_stream, deserialize_payload
 
 OUTPUT_STREAM = 'velocities'
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         c.xgroup_create(INPUT_STREAM, GROUP_NAME, mkstream=True)
     block_count = 0
     handled = 0
-    stream_id = {INPUT_STREAM: '>'}
+    stream_id = {INPUT_STREAM: '>'}  # Start reading incoming messages
     while block_count < 10 and handled < MAX_CYCLES:
         response = c.xreadgroup(GROUP_NAME, CONSUMER_NAME, stream_id, block=BLOCK_TIME)
         if len(response) > 0:

@@ -19,7 +19,7 @@ if __name__ == "__main__":
     if not group_exists(c, INPUT_STREAM, GROUP_NAME):
         c.xgroup_create(INPUT_STREAM, GROUP_NAME, mkstream=True)
     block_count = 0
-    stream_id = {INPUT_STREAM: '>'}
+    stream_id = {INPUT_STREAM: '>'}  # Start reading incoming messages
     while block_count < 10:
         response = c.xreadgroup(GROUP_NAME, CONSUMER_NAME, stream_id, block=BLOCK_TIME)
         if len(response) > 0:
