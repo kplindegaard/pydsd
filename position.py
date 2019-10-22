@@ -1,5 +1,6 @@
 from config import h
 from utils import get_client, group_exists, push_stream, deserialize_payload
+import os
 
 OUTPUT_STREAM = 'positions'
 INPUT_STREAM = 'velocities'
@@ -15,7 +16,9 @@ def update_position(u, y, h):
 
 
 if __name__ == "__main__":
-    c = get_client()
+    host = os.getenv("REDIS_HOST", "127.0.0.1")
+    print("Starting {0}. Connect to Redis on {1}".format(__file__, host))
+    c = get_client(host=host)
     if not group_exists(c, INPUT_STREAM, GROUP_NAME):
         c.xgroup_create(INPUT_STREAM, GROUP_NAME, mkstream=True)
     block_count = 0
