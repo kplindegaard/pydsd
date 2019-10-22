@@ -1,0 +1,23 @@
+version: '3'
+services:
+  position:
+    image: pydsd
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+    # Wait for redis port to be availble before starting position.py
+    command: ["./wait-for", "redis:6379", "--", "python3", "position.py"]
+  velocity:
+    image: pydsd
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+    # Wait for redis port to be availble before starting velocity.py
+    command: ["./wait-for", "redis:6379", "--", "python3", "velocity.py"]
+  redis:
+    image: redis:5-alpine
+    ports:
+      # Expose port on localhost to enable local trigger payload
+      - 6379:6379
