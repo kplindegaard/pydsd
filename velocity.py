@@ -1,5 +1,5 @@
 from config import h, m, k, d, MAX_CYCLES
-from utils import get_client, group_exists, push_stream, deserialize_payload
+from utils import get_client, group_exists, push_stream, serialize_payload, deserialize_payload
 import os
 
 OUTPUT_STREAM = 'velocities'
@@ -11,9 +11,9 @@ MAX_CYCLES = 1000
 
 
 def update_velocity(u, y, h, m, k, d):
-    ma = -k*u['x'] - d*u['v']
+    ma = -k * u['x'] - d * u['v']
     y_next = dict(u)
-    y_next['v'] = u['v'] + h*1.0/m*ma
+    y_next['v'] = u['v'] + h * 1.0 / m * ma
     y_next['t'] += h
     return y_next
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         if len(response) > 0:
             for data in response:
                 id = data[1][0][0]
-                payload = data[1][0][1]  
+                payload = data[1][0][1]
 
                 # Deserialize payload
                 model, y, u = deserialize_payload(payload)
@@ -41,7 +41,8 @@ if __name__ == "__main__":
                 y_next = update_velocity(u, y, h, m, k, d)
 
                 # Push to output stream
-                push_stream(c, OUTPUT_STREAM, model, u, y_next)
+                payload = serialize_payload(model, u, y_next)
+                push_stream(c, OUTPUT_STREAM, payload)
 
                 # Ack that we are done
                 c.xack(INPUT_STREAM, GROUP_NAME, id)

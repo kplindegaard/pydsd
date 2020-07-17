@@ -1,5 +1,5 @@
 from config import h
-from utils import get_client, group_exists, push_stream, deserialize_payload
+from utils import get_client, group_exists, push_stream, serialize_payload, deserialize_payload
 import os
 
 OUTPUT_STREAM = 'positions'
@@ -11,7 +11,7 @@ BLOCK_TIME = 10000
 
 def update_position(u, y, h):
     y_next = dict(u)
-    y_next['x'] = u['x'] + h*u['v']
+    y_next['x'] = u['x'] + h * u['v']
     return y_next
 
 
@@ -38,7 +38,8 @@ if __name__ == "__main__":
                 print(f"{y_next['t']},{y_next['x']}")
 
                 # Push to output stream
-                push_stream(c, OUTPUT_STREAM, model, u, y_next)
+                payload = serialize_payload(model, u, y_next)
+                push_stream(c, OUTPUT_STREAM, payload)
 
                 # Ack that we are done
                 c.xack(INPUT_STREAM, GROUP_NAME, id)

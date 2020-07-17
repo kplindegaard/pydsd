@@ -18,18 +18,22 @@ def group_exists(client, stream_name, group):
         return False
 
 
-def push_stream(client, stream_name, model_name, input, output):
-    payload = {
-        'name': model_name,
-        'in': json.dumps(input),
-        'out': json.dumps(output)
-        }
+def push_stream(client, stream_name, payload):
     client.xadd(stream_name, payload)
 
 
 def get_all(client, stream_name):
     # client = get_client()
     return client.xrange(stream_name)
+
+
+def serialize_payload(model_name, input, output):
+    payload = {
+        'name': model_name,
+        'in': json.dumps(input),
+        'out': json.dumps(output)
+    }
+    return payload
 
 
 def deserialize_payload(payload):
